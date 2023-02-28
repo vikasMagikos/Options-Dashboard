@@ -1,0 +1,49 @@
+
+*{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: small;
+}
+
+.table{
+  table-layout: fixed;
+}
+
+.hideLogin{
+  display: none!important;
+}
+
+td{
+  cursor: pointer;
+}
+
+/* CSS for mobile devices */
+@media only screen and (max-width: 767px) {
+  /* Styles for devices with a screen width up to 767 pixels */
+  #login{
+    width: 50%!important;
+  }
+
+  #sellDivData{
+    margin-left: 0!important;
+    margin-top: 35px!important;
+  }
+
+  #textCenter{
+    width: 50%!important;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  /* Styles for devices with a screen width between 768 and 1023 pixels */
+  #login{
+    width: 50%!important;
+  }
+
+  #sellDivData{
+    margin-left: 0!important;
+    margin-top: 35px!important;
+  }
+  #textCenter{
+    width: 50%!important;
+  }
+}
