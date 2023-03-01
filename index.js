@@ -1,140 +1,16 @@
 let errorMSG = $("#passwordError")
-const orderTrackerObj = {
-    "nfo-hdfc-095008224": {
-      strike: 1660,
-      BasketMargin: 88794.214,
-      BuyTotalMargin: 88794.214,
-      SellTotalMargin: 88794.214,
-      BuyBasketStatus: "REJECTED",
-      SellBasketStatus: "OPEN",
-      BuyOrderDate: "2/16/2023 4:12:54 PM",
-      SellOrderDate: "2/17/2023 4:12:54 PM",
-      BuyIRR: 0.08832521057,
-      SellIRR: 4.055076522,
-      RecalculatedBuyIRR: 0.08832521,
-      RecalculatedSellIRR: 4.08832521,
-      BuySideDaysRemaining: 8,
-      SellSideDaysRemaining: 7,
-      NetPayOff: 652.54,
-      BuySideOrders: {
-        230216203630170: {
-          type: "CE",
-          status: "COMPLETE",
-          internal_order_id: "nfo-hdfc-095008224-212",
-          sentPrice: 7,
-          finalPrice: 7,
-        },
-        230216203630171: {
-          type: "PE",
-          status: "COMPLETE",
-          internal_order_id: "nfo-hdfc-095008224-212",
-          sentPrice: 65,
-          finalPrice: 65,
-        },
-        230216203630172: {
-          type: "FUT",
-          status: "COMPLETE",
-          internal_order_id: "nfo-hdfc-095008224-212",
-          sentPrice: 1674,
-          finalPrice: 1674,
-        },
-      },
-      SellSideOrders: {
-        230216203630174: {
-          type: "CE",
-          status: "COMPLETE",
-          internal_order_id: "nfo-hdfc-095008224-212",
-          sentPrice: 8,
-          finalPrice: 8,
-        },
-        230216203630175: {
-          type: "PE",
-          status: "COMPLETE",
-          internal_order_id: "nfo-hdfc-095008224-212",
-          sentPrice: 64,
-          finalPrice: 64,
-        },
-        230216203630176: {
-          type: "FUT",
-          status: "COMPLETE",
-          internal_order_id: "nfo-hdfc-095008224-212",
-          sentPrice: 1673,
-          finalPrice: 1673,
-        },
-      },
-    },
-    "nfo-hdfc-095008225": {
-        strike: 1660,
-        BasketMargin: 88794.214,
-        BuyTotalMargin: 88794.214,
-        SellTotalMargin: 88794.214,
-        BuyBasketStatus: "COMPLETE",
-        SellBasketStatus: "COMPLETE",
-        BuyOrderDate: "2/16/2023 4:12:54 PM",
-        SellOrderDate: "2/17/2023 4:12:54 PM",
-        BuyIRR: 0.08832521057,
-        SellIRR: 4.055076522,
-        RecalculatedBuyIRR: 0.08832521,
-        RecalculatedSellIRR: 4.08832521,
-        BuySideDaysRemaining: 8,
-        SellSideDaysRemaining: 7,
-        NetPayOff: 652.54,
-        BuySideOrders: {
-          230216203630170: {
-            type: "CE",
-            status: "INCOMPLETE",
-            internal_order_id: "nfo-hdfc-095008224-212",
-            sentPrice: 7,
-            finalPrice: 7,
-          },
-          230216203630171: {
-            type: "PE",
-            status: "COMPLETE",
-            internal_order_id: "nfo-hdfc-095008224-212",
-            sentPrice: 65,
-            finalPrice: 65,
-          },
-          230216203630172: {
-            type: "FUT",
-            status: "COMPLETE",
-            internal_order_id: "nfo-hdfc-095008224-212",
-            sentPrice: 1674,
-            finalPrice: 1674,
-          },
-        },
-        SellSideOrders: {
-          230216203630174: {
-            type: "CE",
-            status: "COMPLETE",
-            internal_order_id: "nfo-hdfc-095008224-212",
-            sentPrice: 8,
-            finalPrice: 8,
-          },
-          230216203630175: {
-            type: "PE",
-            status: "COMPLETE",
-            internal_order_id: "nfo-hdfc-095008224-212",
-            sentPrice: 64,
-            finalPrice: 64,
-          },
-          230216203630176: {
-            type: "FUT",
-            status: "COMPLETE",
-            internal_order_id: "nfo-hdfc-095008224-212",
-            sentPrice: 1673,
-            finalPrice: 1673,
-          },
-        },
-      },
-  };
+let ajaxCallError = $("#ajaxErrorAlert")
+let orderTracked = null;
 
-window.onload = function() {
-  console.log("onload")
+window.onload = async function() {
+  // console.log("onload")
     let isVerified = VerifyUser()
     if(isVerified){
-        $('#loginDiv').removeClass('d-flex').addClass('hideLogin')
+      $('#loginDiv').removeClass('d-flex').addClass('hideLogin')
+      $('#homePageLoader').removeClass('hideHomeLoder').addClass('d-flex')
+       await getTradingData()
         document.getElementById('HomeDiv').style.display = "block"
-        createTable()
+        // createTable()
     }else{
         $('#logoutButton').hide()
         $('#loginDiv').removeClass('hideLogin').addClass('d-flex')
@@ -143,10 +19,9 @@ window.onload = function() {
   }
 
 
-const createTable = () => {
+const createTable = (orderTrackerObj) => {
   $("#optionsTable").children(":not(:first-child)").empty();
   for(let key in orderTrackerObj){
-    // console.log(orderTrackerObj[key]["BuySideOrders"])
     let buySideOrdes = orderTrackerObj[key]["BuySideOrders"]
     let sellSideOrdes = orderTrackerObj[key]["SellSideOrders"]
     let buyCE = {}
@@ -249,8 +124,8 @@ const toggleModal = (e) =>{
         document.getElementById("modalLoader").style.display = "none"
         document.getElementById("modalTable").style.display = "block"
     }, 1000);
-    console.log(orderTrackerObj[e.id])
-    let selectedData = orderTrackerObj[e.id]
+    console.log(orderTracked[e.id])
+    let selectedData = orderTracked[e.id]
     let tComm =`<tr><td>Order Tag</td><td>${e.id}</td></tr><tr><td>Strike</td><td>${selectedData["strike"]}</td></tr><tr><td>Net Pay Off</td><td>${selectedData["NetPayOff"]}</td></tr>`
     $("#ModalCommanTable").append(tComm)
     let buyDiv = `<div class="row p-1"><div id="textCenter" class="col">Basket Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['BasketMargin'].toFixed(2))}
@@ -290,14 +165,16 @@ const form = document.getElementById('login');
     Login();
   });
 
-const Login = () => {
+const Login = async () => {
     let password = document.getElementById('optionLoginPass').value
-    if(password === "1234"){
+    if(password === "master"){
+      $('#HomeDiv').removeClass('hideLogin').addClass('d-flex')
+      $('#homePageLoader').removeClass('hideHomeLoder').addClass('d-flex')
+        await getTradingData()
         $('#logoutButton').show()
-        $('#HomeDiv').removeClass('hideLogin').addClass('d-flex')
         document.getElementById('HomeDiv').style.display = "none"
         $('#loginDiv').removeClass('d-flex').addClass('hideLogin')
-        createTable()
+        // createTable()
         const loginTime = new Date();
         const expirationTime = loginTime.getTime() + 86400000;
         localStorage.setItem('session', expirationTime);
@@ -328,3 +205,344 @@ const VerifyUser = () => {
         return false
     }
 }
+
+
+const getTradingData = async () => {
+  $.ajax({
+    url: 'http://localhost:3000/getTradedData',
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      console.log(data);
+      orderTracked = data
+      $('#homePageLoader').removeClass('d-flex').addClass('hideHomeLoder')
+      createTable(data)
+    },
+    error: function(xhr, status, error) {
+      $('#homePageLoader').show()
+      ajaxCallError.show()
+      setTimeout(() => {
+        ajaxCallError.hide()
+      },3000)
+      console.error('There was a problem with the AJAX request:', status, error);
+    }
+  });
+}
+
+// {
+//   "nfo-hdfc-095008224": {
+//     strike: 1660,
+//     BasketMargin: 88794.214,
+//     BuyTotalMargin: 88794.214,
+//     SellTotalMargin: 88794.214,
+//     BuyBasketStatus: "COMPLETE",
+//     SellBasketStatus: "COMPLETE",
+//     BuyOrderDate: "2/16/2023 4:12:54 PM",
+//     SellOrderDate: "2/17/2023 4:12:54 PM",
+//     BuyIRR: 0.08832521057,
+//     SellIRR: 4.055076522,
+//     RecalculatedBuyIRR: 0.08832521,
+//     RecalculatedSellIRR: 4.08832521,
+//     BuySideDaysRemaining: 8,
+//     SellSideDaysRemaining: 7,
+//     NetPayOff: 652.54,
+//     BuySideOrders: {
+//       230216203630170: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 7,
+//         finalPrice: 7,
+//       },
+//       230216203630171: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 65,
+//         finalPrice: 65,
+//       },
+//       230216203630172: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1674,
+//         finalPrice: 1674,
+//       },
+//     },
+//     SellSideOrders: {
+//       230216203630174: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 8,
+//         finalPrice: 8,
+//       },
+//       230216203630175: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 64,
+//         finalPrice: 64,
+//       },
+//       230216203630176: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1673,
+//         finalPrice: 1673,
+//       },
+//     },
+//   },
+//   "nfo-hdfc-095008228": {
+//     strike: 1660,
+//     BasketMargin: 88794.214,
+//     BuyTotalMargin: 88794.214,
+//     SellTotalMargin: 88794.214,
+//     BuyBasketStatus: "COMPLETE",
+//     SellBasketStatus: "COMPLETE",
+//     BuyOrderDate: "2/16/2023 4:12:54 PM",
+//     SellOrderDate: "2/17/2023 4:12:54 PM",
+//     BuyIRR: 0.08832521057,
+//     SellIRR: 4.055076522,
+//     RecalculatedBuyIRR: 0.08832521,
+//     RecalculatedSellIRR: 4.08832521,
+//     BuySideDaysRemaining: 8,
+//     SellSideDaysRemaining: 7,
+//     NetPayOff: 652.54,
+//     BuySideOrders: {
+//       230216203630170: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 7,
+//         finalPrice: 7,
+//       },
+//       230216203630171: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 65,
+//         finalPrice: 65,
+//       },
+//       230216203630172: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1674,
+//         finalPrice: 1674,
+//       },
+//     },
+//     SellSideOrders: {
+//       230216203630174: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 8,
+//         finalPrice: 8,
+//       },
+//       230216203630175: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 64,
+//         finalPrice: 64,
+//       },
+//       230216203630176: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1673,
+//         finalPrice: 1673,
+//       },
+//     },
+//   },
+//   "nfo-hdfc-095008227": {
+//     strike: 1660,
+//     BasketMargin: 88794.214,
+//     BuyTotalMargin: 88794.214,
+//     SellTotalMargin: 88794.214,
+//     BuyBasketStatus: "COMPLETE",
+//     SellBasketStatus: "COMPLETE",
+//     BuyOrderDate: "2/16/2023 4:12:54 PM",
+//     SellOrderDate: "2/17/2023 4:12:54 PM",
+//     BuyIRR: 0.08832521057,
+//     SellIRR: 4.055076522,
+//     RecalculatedBuyIRR: 0.08832521,
+//     RecalculatedSellIRR: 4.08832521,
+//     BuySideDaysRemaining: 8,
+//     SellSideDaysRemaining: 7,
+//     NetPayOff: 652.54,
+//     BuySideOrders: {
+//       230216203630170: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 7,
+//         finalPrice: 7,
+//       },
+//       230216203630171: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 65,
+//         finalPrice: 65,
+//       },
+//       230216203630172: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1674,
+//         finalPrice: 1674,
+//       },
+//     },
+//     SellSideOrders: {
+//       230216203630174: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 8,
+//         finalPrice: 8,
+//       },
+//       230216203630175: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 64,
+//         finalPrice: 64,
+//       },
+//       230216203630176: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1673,
+//         finalPrice: 1673,
+//       },
+//     },
+//   },
+//   "nfo-hdfc-095008226": {
+//     strike: 1660,
+//     BasketMargin: 88794.214,
+//     BuyTotalMargin: 88794.214,
+//     SellTotalMargin: 88794.214,
+//     BuyBasketStatus: "COMPLETE",
+//     SellBasketStatus: "COMPLETE",
+//     BuyOrderDate: "2/16/2023 4:12:54 PM",
+//     SellOrderDate: "2/17/2023 4:12:54 PM",
+//     BuyIRR: 0.08832521057,
+//     SellIRR: 4.055076522,
+//     RecalculatedBuyIRR: 0.08832521,
+//     RecalculatedSellIRR: 4.08832521,
+//     BuySideDaysRemaining: 8,
+//     SellSideDaysRemaining: 7,
+//     NetPayOff: 652.54,
+//     BuySideOrders: {
+//       230216203630170: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 7,
+//         finalPrice: 7,
+//       },
+//       230216203630171: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 65,
+//         finalPrice: 65,
+//       },
+//       230216203630172: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1674,
+//         finalPrice: 1674,
+//       },
+//     },
+//     SellSideOrders: {
+//       230216203630174: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 8,
+//         finalPrice: 8,
+//       },
+//       230216203630175: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 64,
+//         finalPrice: 64,
+//       },
+//       230216203630176: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1673,
+//         finalPrice: 1673,
+//       },
+//     },
+//   },
+//   "nfo-hdfc-095008225": {
+//     strike: 1660,
+//     BasketMargin: 88794.214,
+//     BuyTotalMargin: 88794.214,
+//     SellTotalMargin: 88794.214,
+//     BuyBasketStatus: "COMPLETE",
+//     SellBasketStatus: "COMPLETE",
+//     BuyOrderDate: "2/16/2023 4:12:54 PM",
+//     SellOrderDate: "2/17/2023 4:12:54 PM",
+//     BuyIRR: 0.08832521057,
+//     SellIRR: 4.055076522,
+//     RecalculatedBuyIRR: 0.08832521,
+//     RecalculatedSellIRR: 4.08832521,
+//     BuySideDaysRemaining: 8,
+//     SellSideDaysRemaining: 7,
+//     NetPayOff: 652.54,
+//     BuySideOrders: {
+//       230216203630170: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 7,
+//         finalPrice: 7,
+//       },
+//       230216203630171: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 65,
+//         finalPrice: 65,
+//       },
+//       230216203630172: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1674,
+//         finalPrice: 1674,
+//       },
+//     },
+//     SellSideOrders: {
+//       230216203630174: {
+//         type: "CE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 8,
+//         finalPrice: 8,
+//       },
+//       230216203630175: {
+//         type: "PE",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 64,
+//         finalPrice: 64,
+//       },
+//       230216203630176: {
+//         type: "FUT",
+//         status: "COMPLETE",
+//         internal_order_id: "nfo-hdfc-095008224-212",
+//         sentPrice: 1673,
+//         finalPrice: 1673,
+//       },
+//     },
+//   },
+// };
