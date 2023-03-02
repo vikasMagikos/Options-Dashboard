@@ -55,6 +55,11 @@ const createTable = (orderTrackerObj) => {
         }
     }
     let tRow = `<tr id='${key}' onclick="toggleModal(this)" data-bs-toggle="modal" data-bs-target="#exampleModal">`
+    if (buyFUT['status'] == "COMPLETE") {
+        tRow += `<td scope="col">${buyFUT['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+    } else {
+        tRow += `<td scope="col">${buyFUT['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+    }
     if (buyCE['status'] == "COMPLETE") {
         tRow += `<td scope="col">${buyCE['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
     } else {
@@ -65,13 +70,8 @@ const createTable = (orderTrackerObj) => {
     } else {
         tRow += `<td scope="col">${buyPE['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
     }
-    if (buyFUT['status'] == "COMPLETE") {
-        tRow += `<td scope="col">${buyFUT['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
-    } else {
-        tRow += `<td scope="col">${buyFUT['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
-    }
 
-    if(orderTrackerObj[key]["BuyBasketStatus"] == "COMPLETE"){
+    if(orderTrackerObj[key]["BuyBasketStatus"] == "COMPLETED"){
         tRow += `<td scope="col"><span class="border border-success p-1 rounded" style="color: #ffffff; background-color: #079907; font-size: 10px;text-shadow: 0px 0px 1px;box-shadow: 0px 0px 2px;">${orderTrackerObj[key]["BuyBasketStatus"]}</span></td>`
     }else if(orderTrackerObj[key]["BuyBasketStatus"] == "INCOMPLETE" || orderTrackerObj[key]["BuyBasketStatus"] == "OPEN"){
         tRow += `<td scope="col"><span class="border border-warning p-1 rounded" style="color: #ffffff; background-color: #ffc107; font-size: 10px;text-shadow: 0px 0px 1px;box-shadow: 0px 0px 2px;">${orderTrackerObj[key]["BuyBasketStatus"]}</span></td>`
@@ -81,6 +81,11 @@ const createTable = (orderTrackerObj) => {
     tRow += `<td scope="col">${parseFloat(orderTrackerObj[key]["RecalculatedBuyIRR"].toFixed(2))}</td>
     <td scope="col">${orderTrackerObj[key]["strike"]}</td>
     <td scope="col">${key}</td>`
+if (sellFUT['status'] == "COMPLETE") {
+    tRow += `<td scope="col">${sellFUT['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+} else {
+    tRow += `<td scope="col">${sellFUT['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+}
 if (sellCE['status'] == "COMPLETE") {
     tRow += `<td scope="col">${sellCE['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
 } else {
@@ -91,12 +96,7 @@ if (sellPE['status'] == "COMPLETE") {
 } else {
     tRow += `<td scope="col">${sellPE['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
 }
-if (sellFUT['status'] == "COMPLETE") {
-    tRow += `<td scope="col">${sellFUT['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
-} else {
-    tRow += `<td scope="col">${sellFUT['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
-}
-if(orderTrackerObj[key]["SellBasketStatus"] == "COMPLETE"){
+if(orderTrackerObj[key]["SellBasketStatus"] == "COMPLETED"){
     tRow += `<td scope="col"><span class="border border-success p-1 rounded" style="color: #ffffff; background-color: #079907; font-size: 10px;text-shadow: 0px 0px 1px;box-shadow: 0px 0px 2px;">${orderTrackerObj[key]["SellBasketStatus"]}</span></td>`
 }else if(orderTrackerObj[key]["SellBasketStatus"] == "INCOMPLETE" || orderTrackerObj[key]["SellBasketStatus"] == "OPEN"){
     tRow += `<td scope="col"><span class="border border-warning p-1 rounded" style="color: #ffffff; background-color: #ffc107; font-size: 10px;text-shadow: 0px 0px 1px;box-shadow: 0px 0px 2px;">${orderTrackerObj[key]["SellBasketStatus"]}</span></td>`
@@ -104,7 +104,7 @@ if(orderTrackerObj[key]["SellBasketStatus"] == "COMPLETE"){
     tRow += `<td scope="col"><span class="border border-danger p-1 rounded" style="color: #ffffff; background-color: #dc3545; font-size: 10px;text-shadow: 0px 0px 1px;box-shadow: 0px 0px 2px;">${orderTrackerObj[key]["SellBasketStatus"]}</span></td>`
 }
 tRow += `<td scope="col">${parseFloat(orderTrackerObj[key]["RecalculatedSellIRR"].toFixed(2))}</td>
-<td scope="col">${orderTrackerObj[key]["NetPayOff"]}</td>
+<td scope="col">${parseFloat(orderTrackerObj[key]["NetPayOff"].toFixed(2))}</td>
 </tr>`
 $("#optionsTable").append(tRow)
   }
@@ -126,15 +126,16 @@ const toggleModal = (e) =>{
     }, 1000);
     console.log(orderTracked[e.id])
     let selectedData = orderTracked[e.id]
-    let tComm =`<tr><td>Order Tag</td><td>${e.id}</td></tr><tr><td>Strike</td><td>${selectedData["strike"]}</td></tr><tr><td>Net Pay Off</td><td>${selectedData["NetPayOff"]}</td></tr>`
+    let tComm =`<tr><td>Order Tag</td><td>${e.id}</td></tr><tr><td>Strike</td><td>${selectedData["strike"]}</td></tr><tr><td>Net Pay Off</td><td>${parseFloat(selectedData["NetPayOff"].toFixed(2))}</td></tr>`
     $("#ModalCommanTable").append(tComm)
-    let buyDiv = `<div class="row p-1"><div id="textCenter" class="col">Basket Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['BasketMargin'].toFixed(2))}
-    </div></div><div class="row p-1"><div id="textCenter" class="col">Buy Total Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['BuyTotalMargin'].toFixed(2))}
+    let buyDiv = `<div class="row p-1"><div id="textCenter" class="col">Buy Basket Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['BasketMargin'].toFixed(2))}
+    </div></div><div class="row p-1"><div id="textCenter" class="col">Buy Total Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['TotalMargin'].toFixed(2))}
     </div></div><div class="row p-1"><div id="textCenter" class="col">Buy Basket Status :</div><div id="textCenter" class="col">${selectedData['BuyBasketStatus']}</div>
   </div><div class="row p-1"><div id="textCenter" class="col">Buy Order Date :</div><div id="textCenter" class="col">${selectedData['BuyOrderDate']}</div></div><div class="row p-1">
 <div id="textCenter" class="col">IRR :</div><div id="textCenter" class="col">${parseFloat(selectedData['RecalculatedBuyIRR'].toFixed(2))}</div></div><div class="row p-1">
 <div id="textCenter" class="col">Remaining Days :</div><div id="textCenter" class="col">${selectedData['BuySideDaysRemaining']}</div></div>`
-  $("#buyContainer").append(buyDiv)
+console.log(buyDiv)  
+$("#buyContainer").append(buyDiv)
 
   let sellDiv = `<div class="row p-1"><div id="textCenter" class="col">Sell Total Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['SellTotalMargin'].toFixed(2))}
   </div></div><div class="row p-1"><div id="textCenter" class="col">Sell Basket Status :
@@ -143,18 +144,19 @@ const toggleModal = (e) =>{
     ${parseFloat(selectedData['RecalculatedSellIRR'].toFixed(2))}</div></div><div class="row p-1"><div id="textCenter" class="col-sm">Remaining Days :</div>
   <div id="textCenter" class="col">${selectedData['SellSideDaysRemaining']}</div></div><div class="row p-1"><div id="textCenter" class="col"></div><div id="textCenter" class="col">
  </div></div>`
+ console.log(sellDiv)
 $("#sellContainer").append(sellDiv)
 
 let buySideOrders =selectedData['BuySideOrders']
 let sellSideOrders =selectedData['SellSideOrders']
 let buyTR = null
 for(let buyoption in buySideOrders){
-    buyTR += `<tr><td>${buySideOrders[buyoption]["type"]}</td><td>${buySideOrders[buyoption]["status"]}</td><td>${buySideOrders[buyoption]["internal_order_id"]}</td><td>${buySideOrders[buyoption]["sentPrice"]}</td><td>${buySideOrders[buyoption]["finalPrice"]}</td></tr>`
+    buyTR += `<tr><td>${buySideOrders[buyoption]["type"]}</td><td>${buySideOrders[buyoption]["status"]}</td><td>${buySideOrders[buyoption]["internalOrderid"]}</td><td>${buySideOrders[buyoption]["sentPrice"]}</td><td>${buySideOrders[buyoption]["finalPrice"]}</td></tr>`
 }
 $("#buyTable").append(buyTR)
 let sellTR = null
 for(let selloption in sellSideOrders){
-    sellTR  += `<tr><td>${sellSideOrders[selloption]["type"]}</td><td>${sellSideOrders[selloption]["status"]}</td><td>${sellSideOrders[selloption]["internal_order_id"]}</td><td>${sellSideOrders[selloption]["sentPrice"]}</td><td>${sellSideOrders[selloption]["finalPrice"]}</td></tr>`
+    sellTR  += `<tr><td>${sellSideOrders[selloption]["type"]}</td><td>${sellSideOrders[selloption]["status"]}</td><td>${sellSideOrders[selloption]["internalOrderid"]}</td><td>${sellSideOrders[selloption]["sentPrice"]}</td><td>${sellSideOrders[selloption]["finalPrice"]}</td></tr>`
 }
 $("#sellTable").append(sellTR)
 }
@@ -219,7 +221,7 @@ const getTradingData = async () => {
       createTable(data)
     },
     error: function(xhr, status, error) {
-      $('#homePageLoader').show()
+        $('#homePageLoader').removeClass('d-flex').addClass('hideHomeLoder')
       ajaxCallError.show()
       setTimeout(() => {
         ajaxCallError.hide()
@@ -228,321 +230,3 @@ const getTradingData = async () => {
     }
   });
 }
-
-// {
-//   "nfo-hdfc-095008224": {
-//     strike: 1660,
-//     BasketMargin: 88794.214,
-//     BuyTotalMargin: 88794.214,
-//     SellTotalMargin: 88794.214,
-//     BuyBasketStatus: "COMPLETE",
-//     SellBasketStatus: "COMPLETE",
-//     BuyOrderDate: "2/16/2023 4:12:54 PM",
-//     SellOrderDate: "2/17/2023 4:12:54 PM",
-//     BuyIRR: 0.08832521057,
-//     SellIRR: 4.055076522,
-//     RecalculatedBuyIRR: 0.08832521,
-//     RecalculatedSellIRR: 4.08832521,
-//     BuySideDaysRemaining: 8,
-//     SellSideDaysRemaining: 7,
-//     NetPayOff: 652.54,
-//     BuySideOrders: {
-//       230216203630170: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 7,
-//         finalPrice: 7,
-//       },
-//       230216203630171: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 65,
-//         finalPrice: 65,
-//       },
-//       230216203630172: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1674,
-//         finalPrice: 1674,
-//       },
-//     },
-//     SellSideOrders: {
-//       230216203630174: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 8,
-//         finalPrice: 8,
-//       },
-//       230216203630175: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 64,
-//         finalPrice: 64,
-//       },
-//       230216203630176: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1673,
-//         finalPrice: 1673,
-//       },
-//     },
-//   },
-//   "nfo-hdfc-095008228": {
-//     strike: 1660,
-//     BasketMargin: 88794.214,
-//     BuyTotalMargin: 88794.214,
-//     SellTotalMargin: 88794.214,
-//     BuyBasketStatus: "COMPLETE",
-//     SellBasketStatus: "COMPLETE",
-//     BuyOrderDate: "2/16/2023 4:12:54 PM",
-//     SellOrderDate: "2/17/2023 4:12:54 PM",
-//     BuyIRR: 0.08832521057,
-//     SellIRR: 4.055076522,
-//     RecalculatedBuyIRR: 0.08832521,
-//     RecalculatedSellIRR: 4.08832521,
-//     BuySideDaysRemaining: 8,
-//     SellSideDaysRemaining: 7,
-//     NetPayOff: 652.54,
-//     BuySideOrders: {
-//       230216203630170: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 7,
-//         finalPrice: 7,
-//       },
-//       230216203630171: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 65,
-//         finalPrice: 65,
-//       },
-//       230216203630172: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1674,
-//         finalPrice: 1674,
-//       },
-//     },
-//     SellSideOrders: {
-//       230216203630174: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 8,
-//         finalPrice: 8,
-//       },
-//       230216203630175: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 64,
-//         finalPrice: 64,
-//       },
-//       230216203630176: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1673,
-//         finalPrice: 1673,
-//       },
-//     },
-//   },
-//   "nfo-hdfc-095008227": {
-//     strike: 1660,
-//     BasketMargin: 88794.214,
-//     BuyTotalMargin: 88794.214,
-//     SellTotalMargin: 88794.214,
-//     BuyBasketStatus: "COMPLETE",
-//     SellBasketStatus: "COMPLETE",
-//     BuyOrderDate: "2/16/2023 4:12:54 PM",
-//     SellOrderDate: "2/17/2023 4:12:54 PM",
-//     BuyIRR: 0.08832521057,
-//     SellIRR: 4.055076522,
-//     RecalculatedBuyIRR: 0.08832521,
-//     RecalculatedSellIRR: 4.08832521,
-//     BuySideDaysRemaining: 8,
-//     SellSideDaysRemaining: 7,
-//     NetPayOff: 652.54,
-//     BuySideOrders: {
-//       230216203630170: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 7,
-//         finalPrice: 7,
-//       },
-//       230216203630171: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 65,
-//         finalPrice: 65,
-//       },
-//       230216203630172: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1674,
-//         finalPrice: 1674,
-//       },
-//     },
-//     SellSideOrders: {
-//       230216203630174: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 8,
-//         finalPrice: 8,
-//       },
-//       230216203630175: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 64,
-//         finalPrice: 64,
-//       },
-//       230216203630176: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1673,
-//         finalPrice: 1673,
-//       },
-//     },
-//   },
-//   "nfo-hdfc-095008226": {
-//     strike: 1660,
-//     BasketMargin: 88794.214,
-//     BuyTotalMargin: 88794.214,
-//     SellTotalMargin: 88794.214,
-//     BuyBasketStatus: "COMPLETE",
-//     SellBasketStatus: "COMPLETE",
-//     BuyOrderDate: "2/16/2023 4:12:54 PM",
-//     SellOrderDate: "2/17/2023 4:12:54 PM",
-//     BuyIRR: 0.08832521057,
-//     SellIRR: 4.055076522,
-//     RecalculatedBuyIRR: 0.08832521,
-//     RecalculatedSellIRR: 4.08832521,
-//     BuySideDaysRemaining: 8,
-//     SellSideDaysRemaining: 7,
-//     NetPayOff: 652.54,
-//     BuySideOrders: {
-//       230216203630170: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 7,
-//         finalPrice: 7,
-//       },
-//       230216203630171: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 65,
-//         finalPrice: 65,
-//       },
-//       230216203630172: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1674,
-//         finalPrice: 1674,
-//       },
-//     },
-//     SellSideOrders: {
-//       230216203630174: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 8,
-//         finalPrice: 8,
-//       },
-//       230216203630175: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 64,
-//         finalPrice: 64,
-//       },
-//       230216203630176: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1673,
-//         finalPrice: 1673,
-//       },
-//     },
-//   },
-//   "nfo-hdfc-095008225": {
-//     strike: 1660,
-//     BasketMargin: 88794.214,
-//     BuyTotalMargin: 88794.214,
-//     SellTotalMargin: 88794.214,
-//     BuyBasketStatus: "COMPLETE",
-//     SellBasketStatus: "COMPLETE",
-//     BuyOrderDate: "2/16/2023 4:12:54 PM",
-//     SellOrderDate: "2/17/2023 4:12:54 PM",
-//     BuyIRR: 0.08832521057,
-//     SellIRR: 4.055076522,
-//     RecalculatedBuyIRR: 0.08832521,
-//     RecalculatedSellIRR: 4.08832521,
-//     BuySideDaysRemaining: 8,
-//     SellSideDaysRemaining: 7,
-//     NetPayOff: 652.54,
-//     BuySideOrders: {
-//       230216203630170: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 7,
-//         finalPrice: 7,
-//       },
-//       230216203630171: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 65,
-//         finalPrice: 65,
-//       },
-//       230216203630172: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1674,
-//         finalPrice: 1674,
-//       },
-//     },
-//     SellSideOrders: {
-//       230216203630174: {
-//         type: "CE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 8,
-//         finalPrice: 8,
-//       },
-//       230216203630175: {
-//         type: "PE",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 64,
-//         finalPrice: 64,
-//       },
-//       230216203630176: {
-//         type: "FUT",
-//         status: "COMPLETE",
-//         internal_order_id: "nfo-hdfc-095008224-212",
-//         sentPrice: 1673,
-//         finalPrice: 1673,
-//       },
-//     },
-//   },
-// };
