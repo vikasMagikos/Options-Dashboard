@@ -23,7 +23,10 @@ const createTable = (orderTrackerObj) => {
   $("#optionsTable").children(":not(:first-child)").empty();
   for(let key in orderTrackerObj){
     let buySideOrdes = orderTrackerObj[key]["BuySideOrders"]
-    let sellSideOrdes = orderTrackerObj[key]["SellSideOrders"]
+    let sellSideOrdes = null
+    if("SellSideOrders" in orderTrackerObj[key]){
+        sellSideOrdes = orderTrackerObj[key]["SellSideOrders"]
+    }
     let buyCE = {}
     let buyPE = {}
     let buyFUT = {}
@@ -42,16 +45,18 @@ const createTable = (orderTrackerObj) => {
             buyFUT['status'] = buySideOrdes[optionKey]["status"]
         }
     }
-    for(let optionKey in sellSideOrdes){
-        if(sellSideOrdes[optionKey]["type"] == "CE"){
-            sellCE['price'] = sellSideOrdes[optionKey]["finalPrice"]
-            sellCE['status'] = sellSideOrdes[optionKey]["status"]
-        }else if(sellSideOrdes[optionKey]["type"] == "PE"){
-            sellPE['price'] = sellSideOrdes[optionKey]["finalPrice"]
-            sellPE['status'] = sellSideOrdes[optionKey]["status"]
-        }else if(sellSideOrdes[optionKey]["type"] == "FUT"){
-            sellFUT['price'] = sellSideOrdes[optionKey]["finalPrice"]
-            sellFUT['status'] = sellSideOrdes[optionKey]["status"]
+    if(sellSideOrdes){
+        for(let optionKey in sellSideOrdes){
+            if(sellSideOrdes[optionKey]["type"] == "CE"){
+                sellCE['price'] = sellSideOrdes[optionKey]["finalPrice"]
+                sellCE['status'] = sellSideOrdes[optionKey]["status"]
+            }else if(sellSideOrdes[optionKey]["type"] == "PE"){
+                sellPE['price'] = sellSideOrdes[optionKey]["finalPrice"]
+                sellPE['status'] = sellSideOrdes[optionKey]["status"]
+            }else if(sellSideOrdes[optionKey]["type"] == "FUT"){
+                sellFUT['price'] = sellSideOrdes[optionKey]["finalPrice"]
+                sellFUT['status'] = sellSideOrdes[optionKey]["status"]
+            }
         }
     }
     let tRow = `<tr id='${key}' onclick="toggleModal(this)" data-bs-toggle="modal" data-bs-target="#exampleModal">`
@@ -82,29 +87,32 @@ const createTable = (orderTrackerObj) => {
     <td scope="col">${orderTrackerObj[key]["strike"]}</td>
     <td scope="col">${key}</td>`
 if (sellFUT['status'] == "COMPLETE") {
-    tRow += `<td scope="col">${sellFUT['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+    tRow += `<td scope="col">${sellFUT.hasOwnProperty('price') ? parseFloat(sellFUT["price"].toFixed(2)) : '--'}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
 } else {
-    tRow += `<td scope="col">${sellFUT['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+    tRow += `<td scope="col">${sellFUT.hasOwnProperty('price') ? parseFloat(sellFUT["price"].toFixed(2)) : '--'}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
 }
 if (sellCE['status'] == "COMPLETE") {
-    tRow += `<td scope="col">${sellCE['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+    tRow += `<td scope="col">${sellCE.hasOwnProperty('price') ? parseFloat(sellCE["price"].toFixed(2)) : '--'}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
 } else {
-    tRow += `<td scope="col">${sellCE['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+    tRow += `<td scope="col">${sellCE.hasOwnProperty('price') ? parseFloat(sellCE["price"].toFixed(2)) : '--'}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
 }
 if (sellPE['status'] == "COMPLETE") {
-    tRow += `<td scope="col">${sellPE['price']}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+    tRow += `<td scope="col">${sellPE.hasOwnProperty('price') ? parseFloat(sellPE["price"].toFixed(2)) : '--'}<hr style="color: #079907;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
 } else {
-    tRow += `<td scope="col">${sellPE['price']}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
+    tRow += `<td scope="col">${sellPE.hasOwnProperty('price') ? parseFloat(sellPE["price"].toFixed(2)) : '--'}<hr style="color: #dc3545;margin-top: 0rem;width: 50%;border-width: 3px 0 0 0;border-radius: 2px;"></td>`
 }
 if(orderTrackerObj[key]["SellBasketStatus"] == "COMPLETED"){
     tRow += `<td scope="col"><span class="border border-success p-1 rounded" style="color: #ffffff; background-color: #079907; font-size: 10px;text-shadow: 0px 0px 1px;box-shadow: 0px 0px 2px;">${orderTrackerObj[key]["SellBasketStatus"]}</span></td>`
 }else if(orderTrackerObj[key]["SellBasketStatus"] == "INCOMPLETE" || orderTrackerObj[key]["SellBasketStatus"] == "OPEN"){
     tRow += `<td scope="col"><span class="border border-warning p-1 rounded" style="color: #ffffff; background-color: #ffc107; font-size: 10px;text-shadow: 0px 0px 1px;box-shadow: 0px 0px 2px;">${orderTrackerObj[key]["SellBasketStatus"]}</span></td>`
-}else{
+}else if(orderTrackerObj[key]["SellBasketStatus"] == undefined){
+    tRow += `<td scope="col"><span  style="color: #000; font-size: 10px;">${"--"}</span></td>`
+}
+else{
     tRow += `<td scope="col"><span class="border border-danger p-1 rounded" style="color: #ffffff; background-color: #dc3545; font-size: 10px;text-shadow: 0px 0px 1px;box-shadow: 0px 0px 2px;">${orderTrackerObj[key]["SellBasketStatus"]}</span></td>`
 }
-tRow += `<td scope="col">${parseFloat(orderTrackerObj[key]["RecalculatedSellIRR"].toFixed(2))}</td>
-<td scope="col">${parseFloat(orderTrackerObj[key]["NetPayOff"].toFixed(2))}</td>
+tRow += `<td scope="col">${orderTrackerObj[key].hasOwnProperty('RecalculatedSellIRR') ? parseFloat(orderTrackerObj[key]["RecalculatedSellIRR"].toFixed(2)) : '--'}</td>
+<td scope="col">${orderTrackerObj[key].hasOwnProperty('NetPayOff') ? parseFloat(orderTrackerObj[key]["NetPayOff"].toFixed(2)) : '--'}</td>
 </tr>`
 $("#optionsTable").append(tRow)
   }
@@ -124,27 +132,29 @@ const toggleModal = (e) =>{
         document.getElementById("modalLoader").style.display = "none"
         document.getElementById("modalTable").style.display = "block"
     }, 1000);
-    console.log(orderTracked[e.id])
     let selectedData = orderTracked[e.id]
-    let tComm =`<tr><td>Order Tag</td><td>${e.id}</td></tr><tr><td>Strike</td><td>${selectedData["strike"]}</td></tr><tr><td>Net Pay Off</td><td>${parseFloat(selectedData["NetPayOff"].toFixed(2))}</td></tr>`
+    let tComm =`<tr><td>Order Tag</td><td>${e.id}</td></tr><tr><td>Strike</td><td>${selectedData["strike"]}</td></tr><tr><td>Net Pay Off</td><td>${selectedData.hasOwnProperty('NetPayOff') ? parseFloat(selectedData["NetPayOff"].toFixed(2)) : '--'}</td></tr>`
     $("#ModalCommanTable").append(tComm)
     let buyDiv = `<div class="row p-1"><div id="textCenter" class="col">Buy Basket Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['BasketMargin'].toFixed(2))}
     </div></div><div class="row p-1"><div id="textCenter" class="col">Buy Total Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['TotalMargin'].toFixed(2))}
     </div></div><div class="row p-1"><div id="textCenter" class="col">Buy Basket Status :</div><div id="textCenter" class="col">${selectedData['BuyBasketStatus']}</div>
-  </div><div class="row p-1"><div id="textCenter" class="col">Buy Order Date :</div><div id="textCenter" class="col">${selectedData['BuyOrderDate']}</div></div><div class="row p-1">
-<div id="textCenter" class="col">IRR :</div><div id="textCenter" class="col">${parseFloat(selectedData['RecalculatedBuyIRR'].toFixed(2))}</div></div><div class="row p-1">
-<div id="textCenter" class="col">Remaining Days :</div><div id="textCenter" class="col">${selectedData['BuySideDaysRemaining']}</div></div>`
-console.log(buyDiv)  
+  </div><div class="row p-1"><div id="textCenter" class="col">Buy Order Date :</div><div id="textCenter" class="col">${selectedData['BuyOrderDate']}</div>
+  </div><div class="row p-1">
+  <div id="textCenter" class="col">IRR :</div><div id="textCenter" class="col">${parseFloat(selectedData['BuyIRR'].toFixed(2))}</div></div></div><div class="row p-1">
+  <div id="textCenter" class="col">Recalculated IRR :</div><div id="textCenter" class="col">${parseFloat(selectedData['RecalculatedBuyIRR'].toFixed(2))}</div></div><div class="row p-1">
+<div id="textCenter" class="col">Remaining Days :</div><div id="textCenter" class="col">${selectedData['BuySideDaysRemaining']}</div></div>`  
 $("#buyContainer").append(buyDiv)
 
   let sellDiv = `<div class="row p-1"><div id="textCenter" class="col">Sell Total Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['SellTotalMargin'].toFixed(2))}
   </div></div><div class="row p-1"><div id="textCenter" class="col">Sell Basket Status :
-  </div><div id="textCenter" class="col">${selectedData['SellBasketStatus']}</div></div><div class="row p-1"><div id="textCenter" class="col">Sell Order Date :</div>
-  <div id="textCenter" class="col">${selectedData['SellOrderDate']}</div></div><div class="row p-1"><div id="textCenter" class="col">IRR :</div><div id="textCenter" class="col">
-    ${parseFloat(selectedData['RecalculatedSellIRR'].toFixed(2))}</div></div><div class="row p-1"><div id="textCenter" class="col-sm">Remaining Days :</div>
-  <div id="textCenter" class="col">${selectedData['SellSideDaysRemaining']}</div></div><div class="row p-1"><div id="textCenter" class="col"></div><div id="textCenter" class="col">
+  </div><div id="textCenter" class="col"> ${selectedData.hasOwnProperty('SellBasketStatus') ? selectedData["SellBasketStatus"] : '--'}</div></div><div class="row p-1"><div id="textCenter" class="col">Sell Order Date :</div>
+  <div id="textCenter" class="col">${selectedData.hasOwnProperty('SellOrderDate') ? selectedData["SellOrderDate"] : '--'}</div></div>
+  <div class="row p-1"><div id="textCenter" class="col">IRR :</div><div id="textCenter" class="col">
+  ${selectedData.hasOwnProperty('SellIRR') ? parseFloat(selectedData["SellIRR"].toFixed(2)) : '--'}</div></div>
+  <div class="row p-1"><div id="textCenter" class="col">Recalculated IRR :</div><div id="textCenter" class="col">
+  ${selectedData.hasOwnProperty('RecalculatedSellIRR') ? parseFloat(selectedData["RecalculatedSellIRR"].toFixed(2)) : '--'}</div></div><div class="row p-1"><div id="textCenter" class="col-sm">Remaining Days :</div>
+  <div id="textCenter" class="col">${selectedData.hasOwnProperty('SellSideDaysRemaining') ? parseFloat(selectedData["SellSideDaysRemaining"].toFixed(2)) : '--'}</div></div><div class="row p-1"><div id="textCenter" class="col"></div><div id="textCenter" class="col">
  </div></div>`
- console.log(sellDiv)
 $("#sellContainer").append(sellDiv)
 
 let buySideOrders =selectedData['BuySideOrders']
@@ -155,8 +165,13 @@ for(let buyoption in buySideOrders){
 }
 $("#buyTable").append(buyTR)
 let sellTR = null
+
+if(sellSideOrders){
 for(let selloption in sellSideOrders){
     sellTR  += `<tr><td>${sellSideOrders[selloption]["type"]}</td><td>${sellSideOrders[selloption]["status"]}</td><td>${sellSideOrders[selloption]["internalOrderid"]}</td><td>${sellSideOrders[selloption]["sentPrice"]}</td><td>${sellSideOrders[selloption]["finalPrice"]}</td></tr>`
+}
+}else{
+        sellTR  += `<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr><tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr><tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>`
 }
 $("#sellTable").append(sellTR)
 }
@@ -215,7 +230,6 @@ const getTradingData = async () => {
     method: 'GET',
     dataType: 'json',
     success: function(data) {
-      console.log(data);
       orderTracked = data
       $('#homePageLoader').removeClass('d-flex').addClass('hideHomeLoder')
       createTable(data)
