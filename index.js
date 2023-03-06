@@ -1,5 +1,6 @@
 let errorMSG = $("#passwordError")
 let ajaxCallError = $("#ajaxErrorAlert")
+let totalNetPayOff = $('#totalNetpayoff')
 let orderTracked = null;
 
 window.onload = async function() {
@@ -116,6 +117,24 @@ tRow += `<td scope="col">${orderTrackerObj[key].hasOwnProperty('RecalculatedSell
 </tr>`
 $("#optionsTable").append(tRow)
   }
+  let sum = 0
+    for (const key in orderTrackerObj) {
+        if(orderTrackerObj[key].hasOwnProperty("NetPayOff")){
+            console.log(orderTrackerObj[key]["NetPayOff"])
+            if (typeof orderTrackerObj[key]["NetPayOff"] === 'number') {
+                sum += orderTrackerObj[key]["NetPayOff"];
+              } else if (typeof orderTrackerObj[key]["NetPayOff"] === 'string') {
+                const numValue = Number(orderTrackerObj[key]["NetPayOff"]);
+                if (!isNaN(numValue)) {
+                  sum += numValue;
+                }
+              }
+        }
+    }
+    sum = parseFloat(sum.toFixed(2))
+    totalNetPayOff.html(sum)
+    console.log("this is sum of net Payoff "+sum)
+
 }
 
 
@@ -243,4 +262,19 @@ const getTradingData = async () => {
       console.error('There was a problem with the AJAX request:', status, error);
     }
   });
+}
+
+const objt = {
+    obj1 : {
+        NetPayOff: 245
+    },
+    obj2 : {
+        NetPayOff: -45
+    },
+    obj3 : {
+        NetPayOff: "245"
+    },
+    obj4 : {
+        NetPayOff2: "245"
+    },
 }
