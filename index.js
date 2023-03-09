@@ -121,14 +121,16 @@ $("#optionsTable").append(tRow)
   let sum = 0
     for (const key in orderTrackerObj) {
         if(orderTrackerObj[key].hasOwnProperty("NetPayOff")){
-            if (typeof orderTrackerObj[key]["NetPayOff"] === 'number') {
-                sum += orderTrackerObj[key]["NetPayOff"];
-              } else if (typeof orderTrackerObj[key]["NetPayOff"] === 'string') {
-                const numValue = Number(orderTrackerObj[key]["NetPayOff"]);
-                if (!isNaN(numValue)) {
-                  sum += numValue;
+            if(orderTrackerObj[key]["SellBasketStatus"] === "COMPLETED" && orderTrackerObj[key]["BuyBasketStatus"] === "COMPLETED"){
+                if (typeof orderTrackerObj[key]["NetPayOff"] === 'number') {
+                    sum += orderTrackerObj[key]["NetPayOff"];
+                  } else if (typeof orderTrackerObj[key]["NetPayOff"] === 'string') {
+                    const numValue = Number(orderTrackerObj[key]["NetPayOff"]);
+                    if (!isNaN(numValue)) {
+                      sum += numValue;
+                    }
                 }
-              }
+            }
         }
     }
     sum = parseFloat(sum.toFixed(2))
@@ -244,7 +246,7 @@ const VerifyUser = () => {
 
 const getTradingData = async () => {
   $.ajax({
-    url: 'http://localhost:3000/getTradedData',
+    url: 'http://options.supersimplecloud.in/getOrderTracker',
     method: 'GET',
     dataType: 'json',
     success: function(data) {
