@@ -288,7 +288,7 @@ const orderTrackerObj = {
     BuySideOrders: {
       230306101739081: {
         type: "CE",
-        status: "COMPLETE",
+        status: "INCOMPLETE",
         internalOrderid: "nfo-hdfc-121550961-997",
         exchange_order_id: "2400000050000370",
         sentPrice: 41.2,
@@ -328,7 +328,7 @@ const orderTrackerObj = {
       },
       230306101954706: {
         type: "PE",
-        status: "COMPLETE",
+        status: "INCOMPLETE",
         exchange_order_id: "2400000061467314",
         internalOrderid: "nfo-hdfc-125557145-724",
         sentPrice: 13.15,

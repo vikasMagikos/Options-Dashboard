@@ -2,10 +2,10 @@ let errorMSG = $("#passwordError")
 let ajaxCallError = $("#ajaxErrorAlert")
 let totalNetPayOff = $('#totalNetpayoff')
 let totalNetPayOffNav = $('#totalnet')
+let orderIdModal = $('#internalordermodal')
 let orderTracked = null;
 
 window.onload = async function() {
-  // console.log("onload")
     let isVerified = VerifyUser()
     if(isVerified){
       $('#loginDiv').removeClass('d-flex').addClass('hideLogin')
@@ -138,8 +138,12 @@ $("#optionsTable").append(tRow)
     totalNetPayOffNav.html(sum)
 }
 
+let selectedData = null
+let selectedTag = null
 
 const toggleModal = (e) =>{
+    selectedTag = null
+    selectedData = null
     $("#ModalCommanTable").empty()
     $("#buyContainer").empty()
     $("#sellContainer").empty()
@@ -152,7 +156,8 @@ const toggleModal = (e) =>{
         document.getElementById("modalLoader").style.display = "none"
         document.getElementById("modalTable").style.display = "block"
     }, 1000);
-    let selectedData = orderTracked[e.id]
+    selectedTag = e.id
+    selectedData = orderTracked[selectedTag]
     let tComm =`<tr><td>Order Tag</td><td>${e.id}</td></tr><tr><td>Strike</td><td>${selectedData["strike"]}</td></tr><tr><td>Net Pay Off</td><td>${selectedData.hasOwnProperty('NetPayOff') ? parseFloat(selectedData["NetPayOff"].toFixed(2)) : '--'}</td></tr>`
     $("#ModalCommanTable").append(tComm)
     let buyDiv = `<div class="row p-1"><div id="textCenter" class="col">Buy Basket Margin :</div><div id="textCenter" class="col">${parseFloat(selectedData['BasketMargin'].toFixed(2))}
@@ -180,15 +185,21 @@ $("#sellContainer").append(sellDiv)
 let buySideOrders =selectedData['BuySideOrders']
 let sellSideOrders =selectedData['SellSideOrders']
 let buyTR = null
+let buyCounter = 0
 for(let buyoption in buySideOrders){
-    buyTR += `<tr><td>${buySideOrders[buyoption]["type"]}</td><td>${buySideOrders[buyoption]["status"]}</td><td>${buySideOrders[buyoption]["internalOrderid"]}</td><td>${buySideOrders[buyoption]["sentPrice"]}</td><td>${buySideOrders[buyoption]["finalPrice"]}</td></tr>`
+    // buyCounter = buyCounter+1
+    // let incompleteId = "buy"+buyCounter
+    buyTR += `<tr ${buySideOrders[buyoption]["status"] == "INCOMPLETE" ? `onclick=onEdit(${buyoption})` : ''}><td>${buySideOrders[buyoption]["type"]}</td><td ${buySideOrders[buyoption]["status"] == "INCOMPLETE" ? `id=${buyoption}` : ''} >${buySideOrders[buyoption]["status"]}</td><td>${buySideOrders[buyoption]["internalOrderid"]}</td><td>${buySideOrders[buyoption]["sentPrice"]}</td><td>${buySideOrders[buyoption]["finalPrice"]}</td></tr>`
 }
 $("#buyTable").append(buyTR)
 let sellTR = null
 
 if(sellSideOrders){
+let sellCounter = 0
 for(let selloption in sellSideOrders){
-    sellTR  += `<tr><td>${sellSideOrders[selloption]["type"]}</td><td>${sellSideOrders[selloption]["status"]}</td><td>${sellSideOrders[selloption]["internalOrderid"]}</td><td>${sellSideOrders[selloption]["sentPrice"]}</td><td>${sellSideOrders[selloption]["finalPrice"]}</td></tr>`
+    // sellCounter = sellCounter+1
+    // let incompleteId = "sell"+sellCounter
+    sellTR  += `<tr ${sellSideOrders[selloption]["status"] == "INCOMPLETE" ? `onclick=onEdit(${selloption})` : ''}><td>${sellSideOrders[selloption]["type"]}</td><td ${sellSideOrders[selloption]["status"] == "INCOMPLETE" ? `id=${selloption}` : ''} >${sellSideOrders[selloption]["status"]}</td><td>${sellSideOrders[selloption]["internalOrderid"]}</td><td>${sellSideOrders[selloption]["sentPrice"]}</td><td>${sellSideOrders[selloption]["finalPrice"]}</td></tr>`
 }
 }else{
         sellTR  += `<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr><tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr><tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>`
@@ -247,6 +258,7 @@ const VerifyUser = () => {
 const getTradingData = async () => {
   $.ajax({
     url: 'http://options.supersimplecloud.in/getOrderTracker',
+    // url: 'http://localhost:3000/getTradedData',
     method: 'GET',
     dataType: 'json',
     success: function(data) {
@@ -264,3 +276,89 @@ const getTradingData = async () => {
     }
   });
 }
+
+const onEdit = (elm) => {
+$("#averagePriceError").html("")
+$("#exchangeOrderIdErrror").html("")
+$("#averagePrice").val("");
+$("#exchangeOrderId").val("");
+let instTag = $("#instrument")
+instTag.html(selectedTag)
+for(let selectedDataKey in selectedData){
+    if(selectedData[selectedDataKey].hasOwnProperty(elm)){
+        if(selectedDataKey === "BuySideOrders"){
+            $("#basketOrder").html("Buy Side Orders")
+            $("#ordertype").html(selectedData[selectedDataKey][elm]["type"])
+            $("#orderSentPrice").html(parseFloat(selectedData[selectedDataKey][elm]["sentPrice"].toFixed(2)))
+        }else if(selectedDataKey === "SellSideOrders"){
+            $("#basketOrder").html("Sell Side Orders")
+            $("#ordertype").html(selectedData[selectedDataKey][elm]["type"])
+            $("#orderSentPrice").html(parseFloat(selectedData[selectedDataKey][elm]["sentPrice"].toFixed(2)))
+        }
+    }
+}
+orderIdModal.click()
+}
+
+const markasComplete = () => {
+    let averagePriceError = $("#averagePriceError")
+    let exchangeOrderIdErrror = $("#exchangeOrderIdErrror")
+    averagePriceError.html("")
+    exchangeOrderIdErrror.html("")
+    let averagePrice = $("#averagePrice").val();
+    let exchangeID = $("#exchangeOrderId").val();
+
+    if(averagePrice == "" && exchangeID == "") {
+        averagePriceError.html("Required field can not be empty")
+        exchangeOrderIdErrror.html("Required field can not be empty")
+        averagePriceError.show()
+        exchangeOrderIdErrror.show()
+        return;
+    }
+    if(exchangeID == "") {
+        exchangeOrderIdErrror.html("Required field can not be empty")
+        exchangeOrderIdErrror.show()
+        return;
+    }
+    if(averagePrice == "") {
+        averagePriceError.html("Required field can not be empty")
+        averagePriceError.show()
+        return;
+    }
+    if (!validateNumberInput(averagePrice)) {
+        averagePriceError.html("Average Price  is invalid.")
+        averagePriceError.show()
+        return;
+      }
+    $('#updateOrder').prop("disabled",true)
+    $.ajax({
+        type: "post",
+        url: 'http://options.supersimplecloud.in/modifyOrderTracker',
+        // url: "http://localhost:3000/modifyOrderTracker",
+        contentType: 'application/json',
+        data: JSON.stringify({
+            'avgPrice': averagePrice,
+            'exchangeId': exchangeID,
+            'operation': "update"
+        }),
+        success: function (response) {
+        $('#updateOrder').prop("disabled",false)
+        $('#onSuccess').show()
+        setTimeout(() => {
+            $('#closeUpdateOrder').trigger("click")
+            location.reload();
+          }, 2000);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            $('#updateOrder').prop("disabled",false)
+            $('#onFailure').show()
+            console.log("Error occurred in getBuyBotsData: ",textStatus);
+        }
+    });
+}
+
+
+function validateNumberInput(input) {
+    var regex = /^\d*\.?\d+$/;
+    return regex.test(input);
+  }

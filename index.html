@@ -113,7 +113,7 @@
                             
                           </div>
                           <div class="table-responsive-md">
-                            <table class="table table-bordered rounded-top" style="min-width: 400px;">
+                            <table class="table table-bordered table-hover rounded-top" style="min-width: 400px;">
                               <thead style="background-color: #e3e4e6;">
                                 <tr>
                                   <th>type</th>
@@ -133,7 +133,7 @@
                           <div id="sellContainer" class="container">
                             </div>
                             <div class="table-responsive-md">
-                              <table id="selltableData" class="table table-bordered rounded-top" style="margin-top: 20px;min-width: 400px;">
+                              <table id="selltableData" class="table table-bordered table-hover rounded-top" style="margin-top: 20px;min-width: 400px;">
                                 <thead style="background-color: #e3e4e6;">
                                   <tr>
                                     <th>type</th>
@@ -149,8 +149,58 @@
                             </div>
                           </div>
                         </div>
+                          <button type="button" id="internalordermodal" class="btn btn-primary" data-bs-toggle="modal" style="display: none;" data-bs-target="#modalTradeId" data-bs-whatever="@mdo">Open Modal</button>
                       </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="modalTradeId" tabindex="-1" aria-labelledby="modalTradeId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="basketOrder">--</h1>
+                  <button type="button" id="closeUpdateOrder" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <table class="table table-borderless">
+                      <tbody>
+                        <tr>
+                          <td>Tag</td><td id="instrument"></td>
+                        </tr>
+                        <tr>
+                          <td>Type</td><td id="ordertype"></td>
+                        </tr>
+                        <tr>
+                          <td>Sent price</td><td id="orderSentPrice"></td>
+                        </tr>
+                      </tbody>
+                  </table>
+                  <form class="validated">
+                    <div class="mb-3">
+                      <label for="recipient-name" class="col-form-label">Average Price</label>
+                      <input type="text" id="averagePrice" class="form-control" required autocomplete="off">
+                      <div id="averagePriceError" class="invalid-feedback" style="display: none" ></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="recipient-name" class="col-form-label">Exchange order id</label>
+                      <input type="text" id="exchangeOrderId" class="form-control" required autocomplete="off">
+                      <div id="exchangeOrderIdErrror" class="invalid-feedback" style="display: none;" ></div>
+                    </div>
+                </div>
+                  </form>
+                  <div>
+                    <div id="onSuccess" class="alert alert-success mx-auto" style="width: 22rem;display: none;" role="alert">
+                      Order Updated Successfully!
+                    </div>
+                    <div id="onFailure" class="alert alert-danger mx-auto" style="width: 22rem;display: none;" role="alert">
+                      Something went wrong please try again later!
+                    </div>
+                  </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn btn-outline-success" id="updateOrder" onclick="markasComplete()" >Mark as Commplete</button>
                 </div>
               </div>
             </div>
