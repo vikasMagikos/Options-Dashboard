@@ -5,6 +5,7 @@ let totalNetPayOffNav = $('#totalnet')
 let orderIdModal = $('#internalordermodal')
 let orderTracked = null;
 
+//ON load function to verify user... and fetch the data from server
 window.onload = async function() {
     let isVerified = VerifyUser()
     if(isVerified){
@@ -21,6 +22,7 @@ window.onload = async function() {
   }
 
 
+//Create table row and populate the order..
 const createTable = (orderTrackerObj) => {
   $("#optionsTable").children(":not(:first-child)").empty();
   for(let key in orderTrackerObj){
@@ -141,6 +143,7 @@ $("#optionsTable").append(tRow)
 let selectedData = null
 let selectedTag = null
 
+//toggle the modal on click of the order present in the table ... and populate the the order detials
 const toggleModal = (e) =>{
     selectedTag = null
     selectedData = null
@@ -187,32 +190,29 @@ let sellSideOrders =selectedData['SellSideOrders']
 let buyTR = null
 let buyCounter = 0
 for(let buyoption in buySideOrders){
-    // buyCounter = buyCounter+1
-    // let incompleteId = "buy"+buyCounter
-    buyTR += `<tr ${buySideOrders[buyoption]["status"] == "INCOMPLETE" ? `onclick=onEdit(${buyoption})` : ''}><td>${buySideOrders[buyoption]["type"]}</td><td ${buySideOrders[buyoption]["status"] == "INCOMPLETE" ? `id=${buyoption}` : ''} >${buySideOrders[buyoption]["status"]}</td><td>${buySideOrders[buyoption]["internalOrderid"]}</td><td>${buySideOrders[buyoption]["sentPrice"]}</td><td>${buySideOrders[buyoption]["finalPrice"]}</td></tr>`
+    buyTR += `<tr ${buySideOrders[buyoption]["status"] != "COMPLETE" ? `onclick=onEdit(${buyoption})` : ''}><td>${buySideOrders[buyoption]["type"]}</td><td ${buySideOrders[buyoption]["status"] == "INCOMPLETE" ? `id=${buyoption}` : ''} >${buySideOrders[buyoption]["status"]}</td><td>${buySideOrders[buyoption]["internalOrderid"]}</td><td>${buySideOrders[buyoption]["sentPrice"]}</td><td>${buySideOrders[buyoption]["finalPrice"]}</td></tr>`
 }
 $("#buyTable").append(buyTR)
 let sellTR = null
 
 if(sellSideOrders){
-let sellCounter = 0
 for(let selloption in sellSideOrders){
-    // sellCounter = sellCounter+1
-    // let incompleteId = "sell"+sellCounter
-    sellTR  += `<tr ${sellSideOrders[selloption]["status"] == "INCOMPLETE" ? `onclick=onEdit(${selloption})` : ''}><td>${sellSideOrders[selloption]["type"]}</td><td ${sellSideOrders[selloption]["status"] == "INCOMPLETE" ? `id=${selloption}` : ''} >${sellSideOrders[selloption]["status"]}</td><td>${sellSideOrders[selloption]["internalOrderid"]}</td><td>${sellSideOrders[selloption]["sentPrice"]}</td><td>${sellSideOrders[selloption]["finalPrice"]}</td></tr>`
+    sellTR  += `<tr ${sellSideOrders[selloption]["status"] != "COMPLETE" ? `onclick=onEdit(${selloption})` : ''}><td>${sellSideOrders[selloption]["type"]}</td><td ${sellSideOrders[selloption]["status"] == "INCOMPLETE" ? `id=${selloption}` : ''} >${sellSideOrders[selloption]["status"]}</td><td>${sellSideOrders[selloption]["internalOrderid"]}</td><td>${sellSideOrders[selloption]["sentPrice"]}</td><td>${sellSideOrders[selloption]["finalPrice"]}</td></tr>`
 }
 }else{
         sellTR  += `<tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr><tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr><tr><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>`
 }
 $("#sellTable").append(sellTR)
 }
-const form = document.getElementById('login');
 
+// handle the Login Submit...
+const form = document.getElementById('login');
   form.addEventListener('submit', (event) => {
     event.preventDefault(); // prevent default form submission behavior
     Login();
   });
 
+  //Login and calling getTradingData() to fetch data from backend...
 const Login = async () => {
     let password = document.getElementById('optionLoginPass').value
     if(password === "master"){
@@ -235,15 +235,15 @@ const Login = async () => {
     password.value = ""
 }
 
+//Logout function..
 const Logout = () => {
-    // document.getElementById('HomeDiv').style.display = "none!important"
     $("#HomeDiv").removeClass('d-flex').addClass('hideLogin')
     $('#loginDiv').removeClass('hideLogin').addClass('d-flex')
     $('#logoutButton').hide()
     localStorage.removeItem("session");
 }
 
-
+// Verify user if user is authorized or not ...
 const VerifyUser = () => {
     var currentTime = new Date().getTime();
     const expiryTime = localStorage.getItem("session");
@@ -254,11 +254,11 @@ const VerifyUser = () => {
     }
 }
 
-
+//Fetch's the order object from the server ...
 const getTradingData = async () => {
   $.ajax({
-    url: 'http://options.supersimplecloud.in/getOrderTracker',
-    // url: 'http://localhost:3000/getTradedData',
+    // url: 'http://options.supersimplecloud.in/getOrderTracker',
+    url: 'http://localhost:3000/getTradedData',
     method: 'GET',
     dataType: 'json',
     success: function(data) {
@@ -277,7 +277,16 @@ const getTradingData = async () => {
   });
 }
 
+let oldOrderID = null
+let oldOrderStatus = null
+
+//Open the Edit modal if the specific order is not Complete..
 const onEdit = (elm) => {
+oldOrderID = null
+oldOrderStatus = null
+oldOrderID = elm
+console.log("oldOrderID "+oldOrderID)
+$("#orderIdDiv").hide()
 $("#averagePriceError").html("")
 $("#exchangeOrderIdErrror").html("")
 $("#averagePrice").val("");
@@ -286,27 +295,39 @@ let instTag = $("#instrument")
 instTag.html(selectedTag)
 for(let selectedDataKey in selectedData){
     if(selectedData[selectedDataKey].hasOwnProperty(elm)){
+        oldOrderStatus = selectedData[selectedDataKey][elm]["status"]
+        console.log("oldOrderStatus "+ oldOrderStatus)
         if(selectedDataKey === "BuySideOrders"){
             $("#basketOrder").html("Buy Side Orders")
             $("#ordertype").html(selectedData[selectedDataKey][elm]["type"])
             $("#orderSentPrice").html(parseFloat(selectedData[selectedDataKey][elm]["sentPrice"].toFixed(2)))
+            if(selectedData[selectedDataKey][elm]["status"] == "REJECTED") {
+                $("#orderIdDiv").show()
+            }
         }else if(selectedDataKey === "SellSideOrders"){
             $("#basketOrder").html("Sell Side Orders")
             $("#ordertype").html(selectedData[selectedDataKey][elm]["type"])
             $("#orderSentPrice").html(parseFloat(selectedData[selectedDataKey][elm]["sentPrice"].toFixed(2)))
+            if(selectedData[selectedDataKey][elm]["status"] == "REJECTED") {
+                $("#orderIdDiv").show()
+            }
         }
     }
 }
 orderIdModal.click()
 }
 
+// On click of mark as complete .. validate the input feilds and ajax post call to update the order..
 const markasComplete = () => {
     let averagePriceError = $("#averagePriceError")
     let exchangeOrderIdErrror = $("#exchangeOrderIdErrror")
+    let newOrderIdErrror = $("#newOrderIdErrror")
     averagePriceError.html("")
     exchangeOrderIdErrror.html("")
+    newOrderIdErrror.html("")
     let averagePrice = $("#averagePrice").val();
     let exchangeID = $("#exchangeOrderId").val();
+    let tag = $('#instrument').text()
 
     if(averagePrice == "" && exchangeID == "") {
         averagePriceError.html("Required field can not be empty")
@@ -330,18 +351,44 @@ const markasComplete = () => {
         averagePriceError.show()
         return;
       }
+    let newOrderId = $("#OrderID").val();
+    //Input Object to update order... 
+    let updateObj = {
+        'tag': tag,
+        'old_order_status': oldOrderStatus,
+        'new_order_status': 'COMPLETE',
+        'old_order_id': oldOrderID,
+        'average_price': averagePrice,
+        'exchange_order_id': exchangeID,
+        'operation': "update"
+}
+    if($("#orderIdDiv").is(":visible")){
+        if(newOrderId == ""){
+        newOrderIdErrror.html("Required field can not be empty")
+        newOrderIdErrror.show()
+        return;
+        }
+        if (!validateNumberInput(newOrderId)) {
+            newOrderIdErrror.html("Order ID is invalid.")
+            newOrderIdErrror.show()
+            return;
+          }
+        updateObj['new_order_id'] = newOrderId
+    }else{
+    //if status of order is not rejected set the new order id as old order id...
+    updateObj['new_order_id'] = oldOrderID
+    }
+
     $('#updateOrder').prop("disabled",true)
+    //ajax call to update the order using post request...
     $.ajax({
         type: "post",
-        url: 'http://options.supersimplecloud.in/modifyOrderTracker',
-        // url: "http://localhost:3000/modifyOrderTracker",
+        // url: 'http://options.supersimplecloud.in/modifyOrderTracker',
+        url: "http://localhost:3000/modifyOrderTracker",
         contentType: 'application/json',
-        data: JSON.stringify({
-            'avgPrice': averagePrice,
-            'exchangeId': exchangeID,
-            'operation': "update"
-        }),
+        data: JSON.stringify(updateObj),
         success: function (response) {
+        console.log(response)
         $('#updateOrder').prop("disabled",false)
         $('#onSuccess').show()
         setTimeout(() => {
