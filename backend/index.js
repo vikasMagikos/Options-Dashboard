@@ -498,6 +498,10 @@ app.get("/getTradedData", (req, res) => {
   res.send(orderTrackerObj);
 });
 
+app.get("/getBuyBotsAccMargin", (req, res) => {
+  res.send(["353.73838383"]);
+});
+
 app.post("/modifyOrderTracker", (req, res) => {
   try {
     let data = req.body;

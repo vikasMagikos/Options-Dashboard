@@ -13,10 +13,14 @@ window.onload = async function() {
       $('#homePageLoader').removeClass('hideHomeLoder').addClass('d-flex')
        await getTradingData()
         document.getElementById('HomeDiv').style.display = "block"
-        // createTable()
+        if ($(window).width() < 768) {
+            $('#navMenu button').addClass('totalnetpay menuSideBar');
+          }
+          $('#menuBar').show()
     }else{
-        $('#logoutButton').hide()
         $('#loginDiv').removeClass('hideLogin').addClass('d-flex')
+        $('#navMenu button').removeClass('totalnetpay');
+        $('#menuBar').hide()
         return
     }
   }
@@ -219,13 +223,16 @@ const Login = async () => {
       $('#HomeDiv').removeClass('hideLogin').addClass('d-flex')
       $('#homePageLoader').removeClass('hideHomeLoder').addClass('d-flex')
         await getTradingData()
-        $('#logoutButton').show()
         document.getElementById('HomeDiv').style.display = "none"
+        $('#menuBar').show()
         $('#loginDiv').removeClass('d-flex').addClass('hideLogin')
         // createTable()
         const loginTime = new Date();
         const expirationTime = loginTime.getTime() + 86400000;
         localStorage.setItem('session', expirationTime);
+        if ($(window).width() < 768) {
+            $('#navMenu button').addClass('totalnetpay');
+          }
     }else{
       errorMSG.show()
       setTimeout(() => {
@@ -239,8 +246,15 @@ const Login = async () => {
 const Logout = () => {
     $("#HomeDiv").removeClass('d-flex').addClass('hideLogin')
     $('#loginDiv').removeClass('hideLogin').addClass('d-flex')
-    $('#logoutButton').hide()
+    // $('#logoutButton').hide()
+    $('#totalnet').hide()
+    $('#menuBar').hide()
+    $('#totalNetPayOffNav').hide()
     localStorage.removeItem("session");
+    if ($(window).width() < 768) {
+        console.log("true")
+        $('#navMenu button').removeClass('totalnetpay');
+      }
 }
 
 // Verify user if user is authorized or not ...
@@ -257,14 +271,26 @@ const VerifyUser = () => {
 //Fetch's the order object from the server ...
 const getTradingData = async () => {
   $.ajax({
-    // url: 'http://options.supersimplecloud.in/getOrderTracker',
-    url: 'http://localhost:3000/getTradedData',
+    url: 'http://options.supersimplecloud.in/getOrderTracker',
+    // url: 'http://localhost:3000/getTradedData',
     method: 'GET',
     dataType: 'json',
     success: function(data) {
       orderTracked = data
       $('#homePageLoader').removeClass('d-flex').addClass('hideHomeLoder')
       createTable(data)
+      $.ajax({
+        // url: 'http://localhost:3000/getBuyBotsAccMargin',
+        url: 'http://options.supersimplecloud.in/getBuyBotsAccMargin',
+        method: 'GET',
+        dataType: 'json',
+        success: function(res) {
+            $('#accMargin').text(parseFloat(res[0]).toFixed(2))
+        },
+        error: function(resXhr, resStatus, resError) {
+            console.log("There was a problem with the AJAX request while fetching the margin: ", resStatus, resError)
+        }
+      })
     },
     error: function(xhr, status, error) {
         $('#homePageLoader').removeClass('d-flex').addClass('hideHomeLoder')
@@ -272,7 +298,7 @@ const getTradingData = async () => {
       setTimeout(() => {
         ajaxCallError.hide()
       },3000)
-      console.error('There was a problem with the AJAX request:', status, error);
+      console.log('There was a problem with the AJAX request:', status, error);
     }
   });
 }
@@ -383,8 +409,8 @@ const markasComplete = () => {
     //ajax call to update the order using post request...
     $.ajax({
         type: "post",
-        // url: 'http://options.supersimplecloud.in/modifyOrderTracker',
-        url: "http://localhost:3000/modifyOrderTracker",
+        url: 'http://options.supersimplecloud.in/modifyOrderTracker',
+        // url: "http://localhost:3000/modifyOrderTracker",
         contentType: 'application/json',
         data: JSON.stringify(updateObj),
         success: function (response) {

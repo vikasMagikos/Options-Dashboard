@@ -35,12 +35,18 @@ td{
   #textCenter{
     width: 50%!important;
   }
-  #totalnet{
+  .totalnetpay{
     display: block!important;
   }
   #totalnetDiv{
     display: none;
   }
+  #logoutButton{
+    display: none!important;
+  }
+  /* .menuSideBar{
+    display: block!important;
+  } */
 }
 
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
@@ -56,10 +62,16 @@ td{
   #textCenter{
     width: 50%!important;
   }
-  #totalnet{
+  .totalnetpay{
     display: block!important;
   }
   #totalnetDiv{
     display: none;
   }
+  #logoutButton{
+    display: none!important;
+  }
+  /* .menuSideBar{
+    display: block!important;
+  } */
 }
