@@ -435,3 +435,43 @@ function validateNumberInput(input) {
     var regex = /^\d*\.?\d+$/;
     return regex.test(input);
   }
+
+function onClickSubscribeModal() {
+    $("#unsubscribeTrigger").click();
+}
+
+function unsubscribeFunc() {
+    let instrumentToken = $("#tokenStr").val();
+    let tokenError = $('#tokenStrError')
+    tokenError.html("")
+    if(instrumentToken === ""){
+        tokenError.html("Required field can not be empty")
+        tokenError.show()
+        return;
+    }
+    let validateStrToken = validateToken(instrumentToken)
+    if(!validateStrToken){
+        tokenError.html("Input you provide is not valid")
+        tokenError.show()
+        return;
+    }
+    alert("Input : " +validateStrToken)
+    $("#tokenStr").val("")
+}
+
+function validateToken(str) {
+    // Split the string by commas and trim spaces from each element
+    let arr = str.split(",").map(function(item) {
+        return item.trim();
+    });
+  
+    // Loop through each element of the array and validate it
+    for (let i = 0; i < arr.length; i++) {
+      // Check if the element is a valid number
+      if (isNaN(Number(arr[i]))) {
+        return false;
+      }
+    }
+    arr = arr.map(Number);
+    return arr;
+  }

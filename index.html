@@ -222,8 +222,33 @@
                 <li class="list-group-item">
                   <i class="bi bi-cash-stack me-3"></i>Available funds <b><span id="accMargin" style="color: green;">---</span></b>
                 </li>
-                <li class="list-group-item" onclick="Logout()"><i class="bi bi-box-arrow-in-right me-3"></i> Logout</li>
+                <li class="list-group-item" onclick="onClickSubscribeModal()" style="cursor: pointer;"><i class="bi bi-person-x me-3"></i>Unsubscribe</li>
+                <button id="unsubscribeTrigger" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#unsubscribeModal" style="display: none;">Unsubscribe Modal</button>
+                <li class="list-group-item" onclick="Logout()" style="cursor: pointer;"><i class="bi bi-box-arrow-in-right me-3"></i> Logout</li>
               </ul>
+            </div>
+          </div>
+          <div class="modal fade" id="unsubscribeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Unsubscribe Token</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form class="validated">
+                    <div class="mb-3">
+                      <label for="recipient-name" class="col-form-label">Tokens</label>
+                      <input type="text" id="tokenStr" class="form-control" required autocomplete="off">
+                      <div id="tokenStrError" class="invalid-feedback" style="display: none" ></div>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" onclick="unsubscribeFunc()">Submit</button>
+                </div>
+              </div>
             </div>
           </div>
         <script src="index.js"></script>
