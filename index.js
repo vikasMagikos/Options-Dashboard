@@ -271,8 +271,8 @@ const VerifyUser = () => {
 //Fetch's the order object from the server ...
 const getTradingData = async () => {
   $.ajax({
-    // url: 'http://options.supersimplecloud.in/getOrderTracker',
-    url: 'http://localhost:3000/getTradedData',
+    url: 'http://options.supersimplecloud.in/getOrderTracker',
+    // url: 'http://localhost:3000/getTradedData',
     method: 'GET',
     dataType: 'json',
     success: function(data) {
@@ -280,8 +280,8 @@ const getTradingData = async () => {
       $('#homePageLoader').removeClass('d-flex').addClass('hideHomeLoder')
       createTable(data)
       $.ajax({
-        url: 'http://localhost:3000/getBuyBotsAccMargin',
-        // url: 'http://options.supersimplecloud.in/getBuyBotsAccMargin',
+        // url: 'http://localhost:3000/getBuyBotsAccMargin',
+        url: 'http://options.supersimplecloud.in/getBuyBotsAccMargin',
         method: 'GET',
         dataType: 'json',
         success: function(res) {
@@ -409,8 +409,8 @@ const markasComplete = () => {
     //ajax call to update the order using post request...
     $.ajax({
         type: "post",
-        // url: 'http://options.supersimplecloud.in/modifyOrderTracker',
-        url: "http://localhost:3000/modifyOrderTracker",
+        url: 'http://options.supersimplecloud.in/modifyOrderTracker',
+        // url: "http://localhost:3000/modifyOrderTracker",
         contentType: 'application/json',
         data: JSON.stringify(updateObj),
         success: function (response) {
