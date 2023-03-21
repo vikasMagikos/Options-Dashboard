@@ -271,8 +271,8 @@ const VerifyUser = () => {
 //Fetch's the order object from the server ...
 const getTradingData = async () => {
   $.ajax({
-    url: 'http://options.supersimplecloud.in/getOrderTracker',
-    // url: 'http://localhost:3000/getTradedData',
+    // url: 'http://options.supersimplecloud.in/getOrderTracker',
+    url: 'http://localhost:3000/getTradedData',
     method: 'GET',
     dataType: 'json',
     success: function(data) {
@@ -280,8 +280,8 @@ const getTradingData = async () => {
       $('#homePageLoader').removeClass('d-flex').addClass('hideHomeLoder')
       createTable(data)
       $.ajax({
-        // url: 'http://localhost:3000/getBuyBotsAccMargin',
-        url: 'http://options.supersimplecloud.in/getBuyBotsAccMargin',
+        url: 'http://localhost:3000/getBuyBotsAccMargin',
+        // url: 'http://options.supersimplecloud.in/getBuyBotsAccMargin',
         method: 'GET',
         dataType: 'json',
         success: function(res) {
@@ -409,8 +409,8 @@ const markasComplete = () => {
     //ajax call to update the order using post request...
     $.ajax({
         type: "post",
-        url: 'http://options.supersimplecloud.in/modifyOrderTracker',
-        // url: "http://localhost:3000/modifyOrderTracker",
+        // url: 'http://options.supersimplecloud.in/modifyOrderTracker',
+        url: "http://localhost:3000/modifyOrderTracker",
         contentType: 'application/json',
         data: JSON.stringify(updateObj),
         success: function (response) {
@@ -442,11 +442,20 @@ function onClickSubscribeModal() {
 
 function unsubscribeFunc() {
     let instrumentToken = $("#tokenStr").val();
+    let selectOperation = $("#selectOperation").val();
     let tokenError = $('#tokenStrError')
+    let selectOperationError = $('#selectOperationError')
     tokenError.html("")
+    selectOperationError.html("")
     if(instrumentToken === ""){
         tokenError.html("Required field can not be empty")
         tokenError.show()
+        return;
+    }
+    if(selectOperation != "Subscribe" || selectOperation != "Unsubscribe"){
+        console.log("please select operation")
+        selectOperationError.html("Please select mode")
+        selectOperationError.show()
         return;
     }
     let validateStrToken = validateToken(instrumentToken)
@@ -455,7 +464,11 @@ function unsubscribeFunc() {
         tokenError.show()
         return;
     }
-    alert("Input : " +validateStrToken)
+    if(selectOperation === "Subscribe"){
+        console.log("Input : " +validateStrToken+"   "+selectOperation)
+    }else if(selectOperation === "Unsubscribe"){
+        console.log("Input : " +validateStrToken+"   "+selectOperation)
+    }
     $("#tokenStr").val("")
 }
 

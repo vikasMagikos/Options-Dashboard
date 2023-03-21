@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Options Dashboard</title>
+        <link rel="icon" type="image/x-icon" href="/robot.ico">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="index.css">
@@ -15,7 +16,7 @@
         <div class="navBar shadow p-1 mb-5 bg-white rounded sticky-top">
             <nav class="navbar navbar-light" style="background-color: #fff;">
                 <div class="container-fluid d-flex justify-content-between">
-                  <a class="navbar-brand" href="#">Options Trading</a>
+                  <a class="navbar-brand fw-bold" href="#"><i class="bi bi-robot fs-4 me-2 text-info-emphasis"></i>Options Trading</a>
                   <div id="navMenu" class="d-flex">
                     <button id="totalnet" type="button" class="btn btn-success me-3 my-2 my-sm-0 totalnetpay" style="display: none;" >--</button>
                     <button id="menuBar" class="btn btn-outline-success me-3 my-2 my-sm-0 menuSideBar" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive"><i class="bi bi-list"></i></button>
@@ -222,7 +223,7 @@
                 <li class="list-group-item">
                   <i class="bi bi-cash-stack me-3"></i>Available funds <b><span id="accMargin" style="color: green;">---</span></b>
                 </li>
-                <li class="list-group-item" onclick="onClickSubscribeModal()" style="cursor: pointer;"><i class="bi bi-person-x me-3"></i>Unsubscribe</li>
+                <li class="list-group-item" onclick="onClickSubscribeModal()" style="cursor: pointer;"><i class="bi bi-gear me-3"></i>Manage Tokens</li>
                 <button id="unsubscribeTrigger" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#unsubscribeModal" style="display: none;">Unsubscribe Modal</button>
                 <li class="list-group-item" onclick="Logout()" style="cursor: pointer;"><i class="bi bi-box-arrow-in-right me-3"></i> Logout</li>
               </ul>
@@ -232,7 +233,7 @@
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Unsubscribe Token</h1>
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Manage Tokens</h1>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -241,6 +242,15 @@
                       <label for="recipient-name" class="col-form-label">Tokens</label>
                       <input type="text" id="tokenStr" class="form-control" required autocomplete="off">
                       <div id="tokenStrError" class="invalid-feedback" style="display: none" ></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="recipient-name" class="col-form-label">Select mode</label>
+                      <select id="selectOperation" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                        <option selected>--- Select ---</option>
+                        <option value="Subscribe">Subscribe</option>
+                        <option value="Unsubscribe">Unsubscribe</option>
+                      </select>
+                      <div id="selectOperationError" class="invalid-feedback" style="display: none" ></div>
                     </div>
                   </form>
                 </div>
