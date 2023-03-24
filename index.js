@@ -452,7 +452,7 @@ function unsubscribeFunc() {
         tokenError.show()
         return;
     }
-    if(selectOperation != "Subscribe" || selectOperation != "Unsubscribe"){
+    if(selectOperation === "--- Select ---"){
         console.log("please select operation")
         selectOperationError.html("Please select mode")
         selectOperationError.show()
