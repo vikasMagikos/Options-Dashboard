@@ -127,7 +127,7 @@ $("#optionsTable").append(tRow)
   let sum = 0
     for (const key in orderTrackerObj) {
         if(orderTrackerObj[key].hasOwnProperty("NetPayOff")){
-            if(orderTrackerObj[key]["SellBasketStatus"] === "COMPLETED" && orderTrackerObj[key]["BuyBasketStatus"] === "COMPLETED"){
+            if(orderTrackerObj[key]["SellBasketStatus"] === "COMPLETED" && orderTrackerObj[key]["BuyBasketStatus"] === "COMPLETED" || orderTrackerObj[key]["SellBasketStatus"] === "CLOSED" || orderTrackerObj[key]["BuyBasketStatus"] === "CLOSED"){
                 if (typeof orderTrackerObj[key]["NetPayOff"] === 'number') {
                     sum += orderTrackerObj[key]["NetPayOff"];
                   } else if (typeof orderTrackerObj[key]["NetPayOff"] === 'string') {
